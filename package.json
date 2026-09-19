@@ -23,9 +23,6 @@
     "react": "19.1.1",
     "react-dom": "19.1.1"
   },
-  "prisma": {
-    "seed": "node prisma/seed.mjs"
-  },
   "devDependencies": {
     "@types/node": "22.13.10",
     "@types/react": "19.0.10",
