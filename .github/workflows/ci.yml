@@ -8,6 +8,20 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: small
+          POSTGRES_USER: small
+          POSTGRES_PASSWORD: small
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U small -d small"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       DATABASE_URL: postgresql://small:small@localhost:5432/small
       AUTH_SECRET: ci-only-secret
@@ -20,6 +34,7 @@ jobs:
       - run: npm ci
       - run: npm run db:validate
       - run: npm run db:generate
+      - run: npm run db:migrate
       - run: npm run format:check
       - run: npm run lint
       - run: npm run typecheck
