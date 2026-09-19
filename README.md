@@ -38,6 +38,7 @@ See:
 - [UI/UX Design System](docs/product/design-system.md)
 - [Product Decisions](docs/decisions/README.md)
 - [AI Agent Instructions](AGENTS.md)
+- [Deployment and Operations](docs/deployment.md)
 
 ## Current stage
 

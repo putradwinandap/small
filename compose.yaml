@@ -1,4 +1,17 @@
 services:
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://small:small@db:5432/small
+      AUTH_SECRET: local-development-secret-change-me
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "npm run db:migrate && npm start"
+
   db:
     image: postgres:16-alpine
     environment:
@@ -9,6 +22,11 @@ services:
       - "5432:5432"
     volumes:
       - small-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U small -d small"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
   small-postgres:
