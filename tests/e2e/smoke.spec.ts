@@ -37,18 +37,31 @@ test("a new user can create a habit and record a completion", async ({ page }) =
   await page.reload();
   await expect(page.getByLabel("Timezone")).toHaveValue("Asia/Jakarta");
 
-  const habitsResponse = await page.request.get("/api/habits");
-  expect(habitsResponse.ok()).toBeTruthy();
-  const { habits } = await habitsResponse.json();
+  const habitsResponse = await page.evaluate(async () => {
+    const response = await fetch("/api/habits");
+    return { ok: response.ok, body: await response.json() };
+  });
+  expect(habitsResponse.ok).toBeTruthy();
+  const { habits } = habitsResponse.body;
   const habitId = habits[0].id as string;
 
-  const pauseResponse = await page.request.patch(`/api/habits/${habitId}`, {
-    data: { status: "PAUSED" },
-  });
-  expect(pauseResponse.ok()).toBeTruthy();
+  const pauseResponse = await page.evaluate(async (id) => {
+    const response = await fetch(`/api/habits/${id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ status: "PAUSED" }),
+    });
+    return { ok: response.ok };
+  }, habitId);
+  expect(pauseResponse.ok).toBeTruthy();
 
-  const replacementResponse = await page.request.post("/api/habits", {
-    data: { name: "Write", action: "Write one sentence" },
+  const replacementResponse = await page.evaluate(async () => {
+    const response = await fetch("/api/habits", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name: "Write", action: "Write one sentence" }),
+    });
+    return { status: response.status };
   });
-  expect(replacementResponse.status()).toBe(409);
+  expect(replacementResponse.status).toBe(409);
 });
