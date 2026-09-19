@@ -34,6 +34,7 @@ export function AppShell() {
   const [habit, setHabit] = useState<Habit | null>(null);
   const [habits, setHabits] = useState<Habit[]>([]);
   const [progress, setProgress] = useState({ scheduledDays: 0, completedDays: 0 });
+  const [timezone, setTimezone] = useState("UTC");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
@@ -44,6 +45,8 @@ export function AppShell() {
       setHabits(data.habits);
       setHabit(data.habits.find((item) => item.status === "ACTIVE") ?? null);
       setProgress(data.progress);
+      const account = await request<{ user: { timezone: string } }>("/api/account");
+      setTimezone(account.user.timezone);
       setAuthenticated(true);
     } catch {
       setAuthenticated(false);
@@ -111,6 +114,16 @@ export function AppShell() {
     await request("/api/auth/logout", { method: "POST" });
     setAuthenticated(false);
     setHabit(null);
+  }
+
+  async function updateTimezone(value: string) {
+    setTimezone(value);
+    try {
+      await request("/api/account", { method: "PATCH", body: JSON.stringify({ timezone: value }) });
+      setMessage("Timezone saved.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to save timezone.");
+    }
   }
 
   if (!authenticated) {
@@ -204,9 +217,27 @@ export function AppShell() {
     <main className="shell dashboard-shell">
       <header className="dashboard-header">
         <p className="eyebrow">SMALL</p>
-        <button className="text-button" type="button" onClick={logout}>
-          Log out
-        </button>
+        <div className="header-actions">
+          <label className="timezone-label" htmlFor="timezone">
+            Timezone
+          </label>
+          <select
+            id="timezone"
+            value={timezone}
+            onChange={(event) => void updateTimezone(event.target.value)}
+          >
+            <option value="UTC">UTC</option>
+            <option value="Asia/Jakarta">Asia/Jakarta</option>
+            <option value="Asia/Singapore">Asia/Singapore</option>
+            <option value="Asia/Tokyo">Asia/Tokyo</option>
+            <option value="Europe/London">Europe/London</option>
+            <option value="America/Los_Angeles">America/Los_Angeles</option>
+            <option value="America/New_York">America/New_York</option>
+          </select>
+          <button className="text-button" type="button" onClick={logout}>
+            Log out
+          </button>
+        </div>
       </header>
       <section className="dashboard" aria-labelledby="dashboard-title">
         <p className="eyebrow">YOUR ACTIVE HABIT</p>

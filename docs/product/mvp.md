@@ -36,4 +36,5 @@ Social features, public profiles, gamification points, unlimited dashboards, wea
 - A user can recover from a missed day without losing history.
 - A user cannot bypass the second-habit lock by editing or archiving a habit.
 - A user can pause, archive, and view the history of a habit without deleting its records.
+- A user can update their IANA timezone and future check-ins use the saved timezone.
 - The core flow is covered by automated tests.
