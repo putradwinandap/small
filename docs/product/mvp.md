@@ -35,4 +35,5 @@ Social features, public profiles, gamification points, unlimited dashboards, wea
 - The system prevents a second active habit before unlock.
 - A user can recover from a missed day without losing history.
 - A user cannot bypass the second-habit lock by editing or archiving a habit.
+- A user can pause, archive, and view the history of a habit without deleting its records.
 - The core flow is covered by automated tests.

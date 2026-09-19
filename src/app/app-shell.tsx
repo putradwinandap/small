@@ -105,6 +105,12 @@ export function AppShell() {
     }
   }
 
+  async function logout() {
+    await request("/api/auth/logout", { method: "POST" });
+    setAuthenticated(false);
+    setHabit(null);
+  }
+
   if (!authenticated) {
     return (
       <main className="shell">
@@ -196,7 +202,9 @@ export function AppShell() {
     <main className="shell dashboard-shell">
       <header className="dashboard-header">
         <p className="eyebrow">SMALL</p>
-        <span>One habit today.</span>
+        <button className="text-button" type="button" onClick={logout}>
+          Log out
+        </button>
       </header>
       <section className="dashboard" aria-labelledby="dashboard-title">
         <p className="eyebrow">YOUR ACTIVE HABIT</p>
