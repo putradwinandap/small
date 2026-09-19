@@ -40,5 +40,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Build production Docker image
+        run: docker build --tag small:ci .
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

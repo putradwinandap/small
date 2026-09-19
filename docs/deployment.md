@@ -9,6 +9,8 @@
 
 The application container waits for PostgreSQL health, applies committed migrations, and then starts the production server.
 
+The GitHub Actions pipeline also builds the production Docker image on every pull request and push to `main`.
+
 ## Production checklist
 
 - Use a unique `AUTH_SECRET` generated outside the repository.
