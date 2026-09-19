@@ -53,3 +53,5 @@ The repository is the source of truth for Small. Product decisions should be doc
 Use Node 22 and npm. Install dependencies with `npm ci`, then run `npm run dev` for the application or `npm test` for the domain tests. CI runs formatting, linting, typechecking, tests, and the production build from the committed lockfile.
 
 With PostgreSQL running, use `npm run db:migrate` to apply migrations and `npm run db:seed` to create the demo account (`demo@small.local` / `small-dev-password`).
+
+`/api/health` is the liveness endpoint. `/api/health/ready` also verifies the database connection and returns `503` until the database is reachable.

@@ -17,7 +17,7 @@ The application container waits for PostgreSQL health, applies committed migrati
 - Restrict PostgreSQL access to the application network.
 - Configure a domain and TLS renewal.
 - Run `npm run db:migrate` before serving a new application image.
-- Verify `/api/health` and perform the login/check-in smoke flow.
+- Verify `/api/health`, then verify `/api/health/ready` before performing the login/check-in smoke flow.
 - Do not run the demo seed in a production database.
 
 ## Backup and rollback

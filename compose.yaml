@@ -11,6 +11,11 @@ services:
       db:
         condition: service_healthy
     command: sh -c "npm run db:migrate && npm start"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health/ready | grep -q 'ready'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   db:
     image: postgres:16-alpine
