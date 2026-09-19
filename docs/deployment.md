@@ -11,6 +11,23 @@ The application container waits for PostgreSQL health, applies committed migrati
 
 The GitHub Actions pipeline also builds the production Docker image on every pull request and push to `main`.
 
+## CI troubleshooting and cost controls
+
+Run these checks locally before pushing:
+
+```sh
+npm run format:check
+npm run lint
+npm run typecheck
+npm test
+npm run build
+npm run test:e2e
+```
+
+For authenticated Playwright journeys, browser UI login and browser-originated `fetch` share the same session cookie. A standalone API request context may not share that cookie unless `storageState` is explicitly configured. Use the browser context for API calls that depend on the login performed in the same journey, and assert the response status before parsing response data.
+
+If CI fails, inspect the first failing step and reproduce only that command locally before pushing another commit. Record a new recurring failure mode in `AGENTS.md` or this section together with its prevention rule.
+
 ## Production checklist
 
 - Use a unique `AUTH_SECRET` generated outside the repository.
