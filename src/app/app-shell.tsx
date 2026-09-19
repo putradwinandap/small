@@ -32,6 +32,7 @@ export function AppShell() {
   const [name, setName] = useState("");
   const [action, setAction] = useState("");
   const [habit, setHabit] = useState<Habit | null>(null);
+  const [habits, setHabits] = useState<Habit[]>([]);
   const [progress, setProgress] = useState({ scheduledDays: 0, completedDays: 0 });
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -40,6 +41,7 @@ export function AppShell() {
   async function loadHabits() {
     try {
       const data = await request<{ habits: Habit[]; progress: typeof progress }>("/api/habits");
+      setHabits(data.habits);
       setHabit(data.habits.find((item) => item.status === "ACTIVE") ?? null);
       setProgress(data.progress);
       setAuthenticated(true);
@@ -243,6 +245,42 @@ export function AppShell() {
             Mark missed
           </button>
         </div>
+        {unlocked && habits.filter((item) => item.status === "ACTIVE").length < 2 && (
+          <form className="card form secondary-form" onSubmit={createHabit}>
+            <h2>Your next small change</h2>
+            <p className="form-help">You earned room for one more habit. Keep it small.</p>
+            <label htmlFor="second-habit-name">Habit name</label>
+            <input
+              id="second-habit-name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              required
+            />
+            <label htmlFor="second-habit-action">The small action</label>
+            <input
+              id="second-habit-action"
+              value={action}
+              onChange={(event) => setAction(event.target.value)}
+              required
+            />
+            <button className="button" type="submit" disabled={busy}>
+              {busy ? "Saving…" : "Add the next habit"}
+            </button>
+          </form>
+        )}
+        {habits.length > 1 && (
+          <section className="history" aria-labelledby="history-title">
+            <p className="eyebrow" id="history-title">
+              YOUR HABITS
+            </p>
+            {habits.map((item) => (
+              <div className="history-item" key={item.id}>
+                <span>{item.name}</span>
+                <small>{item.status.toLowerCase()}</small>
+              </div>
+            ))}
+          </section>
+        )}
         {message && (
           <p className="message" role="status">
             {message}
