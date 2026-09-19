@@ -126,6 +126,152 @@ select:focus-visible {
   font-size: 0.75rem;
   font-weight: 700;
 }
+
+.card {
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  background: var(--color-surface);
+  box-shadow: 0 1rem 3rem rgb(35 48 42 / 6%);
+}
+
+.form {
+  display: grid;
+  max-width: 28rem;
+  gap: 0.6rem;
+  margin-top: var(--space-6);
+  padding: var(--space-5);
+}
+
+.form h2 {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.form label {
+  color: var(--color-ink-soft, var(--color-ink));
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.form input {
+  min-height: 3rem;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.form input::placeholder {
+  color: var(--color-muted);
+}
+
+.button:disabled,
+.secondary-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: var(--color-accent-dark);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.message {
+  margin: var(--space-2) 0 0;
+  color: var(--color-accent-dark);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.dashboard-shell {
+  gap: var(--space-6);
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.dashboard-header .eyebrow {
+  color: var(--color-ink);
+}
+
+.dashboard {
+  width: 100%;
+  max-width: 46rem;
+  margin: auto 0;
+}
+
+.dashboard h1 {
+  margin: var(--space-5) 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 400;
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+}
+
+.progress-card {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  padding: var(--space-5);
+}
+
+.card-label {
+  margin: 0;
+  color: var(--color-accent-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.progress-card strong {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.progress-card span {
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.recovery {
+  margin: var(--space-3) 0 0;
+  color: var(--color-accent-dark);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.secondary-button {
+  min-height: 3rem;
+  margin-top: var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  padding: 0.875rem 1.25rem;
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
 @media (max-width: 40rem) {
   .shell {
     padding: var(--space-7) var(--space-5) var(--space-6);
