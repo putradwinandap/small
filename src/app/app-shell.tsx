@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 
 type Habit = {
   id: string;
@@ -38,7 +38,7 @@ export function AppShell() {
   const [message, setMessage] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
 
-  async function loadHabits() {
+  const loadHabits = useCallback(async () => {
     try {
       const data = await request<{ habits: Habit[]; progress: typeof progress }>("/api/habits");
       setHabits(data.habits);
@@ -48,11 +48,11 @@ export function AppShell() {
     } catch {
       setAuthenticated(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     void loadHabits();
-  }, []);
+  }, [loadHabits]);
 
   async function submitAuth(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
