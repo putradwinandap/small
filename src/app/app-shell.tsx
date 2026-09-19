@@ -126,6 +126,27 @@ export function AppShell() {
     }
   }
 
+  async function updateHabitStatus(status: "PAUSED" | "ARCHIVED") {
+    if (!habit) return;
+    setBusy(true);
+    try {
+      await request(`/api/habits/${habit.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      });
+      await loadHabits();
+      setMessage(
+        status === "PAUSED"
+          ? "Habit paused. Your history is safe."
+          : "Habit archived. Your history is safe.",
+      );
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to update habit.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (!authenticated) {
     return (
       <main className="shell">
@@ -274,6 +295,24 @@ export function AppShell() {
             disabled={busy}
           >
             Mark missed
+          </button>
+        </div>
+        <div className="habit-management">
+          <button
+            className="text-button"
+            type="button"
+            onClick={() => void updateHabitStatus("PAUSED")}
+            disabled={busy}
+          >
+            Pause habit
+          </button>
+          <button
+            className="text-button"
+            type="button"
+            onClick={() => void updateHabitStatus("ARCHIVED")}
+            disabled={busy}
+          >
+            Archive habit
           </button>
         </div>
         {unlocked && habits.filter((item) => item.status === "ACTIVE").length < 2 && (

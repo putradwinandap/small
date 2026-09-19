@@ -291,6 +291,12 @@ select:focus-visible {
   gap: var(--space-3);
 }
 
+.habit-management {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
 .secondary-button {
   min-height: 3rem;
   margin-top: var(--space-6);

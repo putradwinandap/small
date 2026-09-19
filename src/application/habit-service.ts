@@ -79,7 +79,7 @@ export async function userHabitProgress(userId: string): Promise<HabitProgress> 
 export async function assertHabitCreationAllowed(userId: string): Promise<void> {
   const [progress, activeHabits] = await Promise.all([
     userHabitProgress(userId),
-    prisma.habit.count({ where: { userId, status: HabitStatus.ACTIVE } }),
+    prisma.habit.count({ where: { userId, status: { not: HabitStatus.ARCHIVED } } }),
   ]);
   assertCanCreateHabit(progress, activeHabits);
 }

@@ -10,3 +10,4 @@
 - Recovery completion does not replace the unlock threshold.
 - Passing 14 scheduled days with only five completions does not unlock a second habit.
 - Editing or archiving a habit does not bypass the unlock rule.
+- Pausing or archiving before unlock does not permit creating a replacement habit.
