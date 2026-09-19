@@ -20,6 +20,7 @@ Help a person maintain one meaningful habit long enough to earn a second habit.
 - Missing a day breaks the streak but does not delete history. Two consecutive missed days start recovery.
 - Three consecutive completions end recovery; recovery does not replace the unlock threshold.
 - The MVP has no skip status: each scheduled day is complete or missed.
+- The MVP schedule is daily; additional schedule patterns are deferred until the daily loop is validated.
 - The user can pause or edit the active habit, but cannot bypass the unlock rule.
 - The initial unlock rule is 14 scheduled days with at least 10 completions.
 - All dates are evaluated in the user's timezone.
