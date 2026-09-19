@@ -41,6 +41,7 @@ test("a new user can create a habit and record a completion", async ({ page }) =
   await expect(page.getByText("Small step recorded.")).toBeVisible();
   await page.getByLabel("Timezone").selectOption("Asia/Jakarta");
   await expect(page.getByLabel("Timezone")).toHaveValue("Asia/Jakarta");
+  await expect(page.getByText("Timezone saved.")).toBeVisible();
   await page.reload();
   await expect(page.getByLabel("Timezone")).toHaveValue("Asia/Jakarta");
 
