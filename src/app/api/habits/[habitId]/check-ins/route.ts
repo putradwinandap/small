@@ -1,5 +1,5 @@
 import { CheckInStatus } from "@prisma/client";
-import { reconcileMissedCheckIns } from "@/application/habit-service";
+import { reconcileMissedCheckIns, refreshRecoveryState } from "@/application/habit-service";
 import { currentUserId } from "@/lib/auth";
 import { jsonError, readJson } from "@/lib/http";
 import { prisma } from "@/lib/prisma";
@@ -51,6 +51,7 @@ export async function POST(request: Request, context: { params: Promise<{ habitI
       });
       return created;
     });
+    await refreshRecoveryState(habitId);
     return Response.json({ checkIn }, { status: 201 });
   } catch {
     return jsonError(

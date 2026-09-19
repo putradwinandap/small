@@ -9,7 +9,7 @@ function startOfUtcDay(value: Date): Date {
 export async function reconcileMissedCheckIns(userId: string): Promise<void> {
   const today = startOfUtcDay(new Date());
   const habits = await prisma.habit.findMany({
-    where: { userId, status: { in: [HabitStatus.ACTIVE, HabitStatus.PAUSED] } },
+    where: { userId, status: HabitStatus.ACTIVE },
     select: { id: true, startedAt: true },
   });
 
@@ -27,7 +27,34 @@ export async function reconcileMissedCheckIns(userId: string): Promise<void> {
       data: missingDates.map((date) => ({ habitId: habit.id, date, status: "MISSED" as const })),
       skipDuplicates: true,
     });
+    await refreshRecoveryState(habit.id);
   }
+}
+
+export async function refreshRecoveryState(habitId: string): Promise<void> {
+  const recent = await prisma.checkIn.findMany({
+    where: { habitId },
+    orderBy: { date: "desc" },
+    take: 3,
+    select: { status: true },
+  });
+  const missedPrefix = recent.findIndex((item) => item.status !== "MISSED");
+  const completePrefix = recent.findIndex((item) => item.status !== "COMPLETE");
+  const missedCount = missedPrefix === -1 ? recent.length : missedPrefix;
+  const completionCount = completePrefix === -1 ? recent.length : completePrefix;
+  const habit = await prisma.habit.findUnique({
+    where: { id: habitId },
+    select: { inRecovery: true },
+  });
+  if (!habit) return;
+  await prisma.habit.update({
+    where: { id: habitId },
+    data: {
+      inRecovery: habit.inRecovery ? completionCount < 3 : missedCount >= 2,
+      consecutiveMissedDays: missedCount,
+      consecutiveRecoveryCompletions: completionCount,
+    },
+  });
 }
 
 export async function userHabitProgress(userId: string): Promise<HabitProgress> {
