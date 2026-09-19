@@ -3,11 +3,7 @@ import { reconcileMissedCheckIns, refreshRecoveryState } from "@/application/hab
 import { currentUserId } from "@/lib/auth";
 import { jsonError, readJson } from "@/lib/http";
 import { prisma } from "@/lib/prisma";
-
-function todayUtc() {
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-}
+import { calendarDayInTimezone } from "@/lib/dates";
 
 export async function POST(request: Request, context: { params: Promise<{ habitId: string }> }) {
   const userId = await currentUserId();
@@ -16,13 +12,16 @@ export async function POST(request: Request, context: { params: Promise<{ habitI
   await reconcileMissedCheckIns(userId);
   const body = await readJson(request);
   const status = body.status === "missed" ? CheckInStatus.MISSED : CheckInStatus.COMPLETE;
-  const habit = await prisma.habit.findFirst({ where: { id: habitId, userId, status: "ACTIVE" } });
+  const habit = await prisma.habit.findFirst({
+    where: { id: habitId, userId, status: "ACTIVE" },
+    include: { user: { select: { timezone: true } } },
+  });
   if (!habit) return jsonError("Habit not found.", 404, "HABIT_NOT_FOUND");
 
   try {
     const checkIn = await prisma.$transaction(async (transaction) => {
       const created = await transaction.checkIn.create({
-        data: { habitId, date: todayUtc(), status },
+        data: { habitId, date: calendarDayInTimezone(new Date(), habit.user.timezone), status },
       });
       const recent = await transaction.checkIn.findMany({
         where: { habitId },

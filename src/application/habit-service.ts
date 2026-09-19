@@ -1,13 +1,16 @@
 import { HabitStatus, Prisma } from "@prisma/client";
 import { activeHabitLimit, assertCanCreateHabit, type HabitProgress } from "@/domain/habit";
 import { prisma } from "@/lib/prisma";
+import { calendarDayInTimezone } from "@/lib/dates";
 
 function startOfUtcDay(value: Date): Date {
   return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
 }
 
 export async function reconcileMissedCheckIns(userId: string): Promise<void> {
-  const today = startOfUtcDay(new Date());
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { timezone: true } });
+  if (!user) return;
+  const today = calendarDayInTimezone(new Date(), user.timezone);
   const habits = await prisma.habit.findMany({
     where: { userId, status: HabitStatus.ACTIVE },
     select: { id: true, startedAt: true },
@@ -16,7 +19,7 @@ export async function reconcileMissedCheckIns(userId: string): Promise<void> {
   for (const habit of habits) {
     const missingDates: Date[] = [];
     for (
-      const cursor = startOfUtcDay(habit.startedAt);
+      const cursor = calendarDayInTimezone(habit.startedAt, user.timezone);
       cursor < today;
       cursor.setUTCDate(cursor.getUTCDate() + 1)
     ) {
