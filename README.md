@@ -35,13 +35,18 @@ See:
 - [Product Vision](docs/product/vision.md)
 - [Product Principles](docs/product/principles.md)
 - [Habit Rules](docs/product/habit-rules.md)
+- [UI/UX Design System](docs/product/design-system.md)
 - [Product Decisions](docs/decisions/README.md)
 - [AI Agent Instructions](AGENTS.md)
 
 ## Current stage
 
-**Stage: Product discovery / foundation**
+**Stage: Product foundation / first vertical slice**
 
-No implementation stack has been selected yet.
+The MVP scope and initial architecture are documented in `docs/product/mvp.md` and `docs/architecture.md`. The initial domain module is under `src/domain`.
 
 The repository is the source of truth for Small. Product decisions should be documented here before or alongside implementation.
+
+## Local development
+
+Use Node 22 and npm. Install dependencies with `npm ci`, then run `npm run dev` for the application or `npm test` for the domain tests. CI runs formatting, linting, typechecking, tests, and the production build from the committed lockfile.

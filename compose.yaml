@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: small
+      POSTGRES_USER: small
+      POSTGRES_PASSWORD: small
+    ports:
+      - "5432:5432"
+    volumes:
+      - small-postgres:/var/lib/postgresql/data
+
+volumes:
+  small-postgres:

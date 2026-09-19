@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum HabitStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum CheckInStatus {
+  COMPLETE
+  MISSED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  timezone  String   @default("UTC")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  habits    Habit[]
+}
+
+model Habit {
+  id                          String      @id @default(cuid())
+  userId                      String
+  name                        String
+  action                      String
+  status                      HabitStatus @default(ACTIVE)
+  inRecovery                  Boolean     @default(false)
+  consecutiveMissedDays      Int         @default(0)
+  consecutiveRecoveryCompletions Int      @default(0)
+  startedAt                   DateTime    @default(now())
+  createdAt                   DateTime    @default(now())
+  updatedAt                   DateTime    @updatedAt
+  user                        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checkIns                    CheckIn[]
+
+  @@index([userId, status])
+}
+
+model CheckIn {
+  id        String         @id @default(cuid())
+  habitId   String
+  date      DateTime
+  status    CheckInStatus
+  createdAt DateTime       @default(now())
+  habit     Habit          @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, date])
+  @@index([habitId, date])
+}
