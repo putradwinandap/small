@@ -16,6 +16,13 @@ test("health endpoint is available", async ({ request }) => {
   expect(await response.json()).toEqual({ status: "ok", service: "small" });
 });
 
+test("database readiness endpoint is available", async ({ request }) => {
+  test.skip(!process.env.DATABASE_URL, "Requires the CI PostgreSQL service");
+  const response = await request.get("/api/health/ready");
+  expect(response.ok()).toBeTruthy();
+  expect(await response.json()).toEqual({ status: "ready", database: "ok" });
+});
+
 test("a new user can create a habit and record a completion", async ({ page }) => {
   test.skip(!process.env.DATABASE_URL, "Requires the CI PostgreSQL service");
   const email = `e2e-${Date.now()}@small.local`;
