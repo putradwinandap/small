@@ -2,6 +2,34 @@ import { HabitStatus, Prisma } from "@prisma/client";
 import { activeHabitLimit, assertCanCreateHabit, type HabitProgress } from "@/domain/habit";
 import { prisma } from "@/lib/prisma";
 
+function startOfUtcDay(value: Date): Date {
+  return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
+}
+
+export async function reconcileMissedCheckIns(userId: string): Promise<void> {
+  const today = startOfUtcDay(new Date());
+  const habits = await prisma.habit.findMany({
+    where: { userId, status: { in: [HabitStatus.ACTIVE, HabitStatus.PAUSED] } },
+    select: { id: true, startedAt: true },
+  });
+
+  for (const habit of habits) {
+    const missingDates: Date[] = [];
+    for (
+      const cursor = startOfUtcDay(habit.startedAt);
+      cursor < today;
+      cursor.setUTCDate(cursor.getUTCDate() + 1)
+    ) {
+      missingDates.push(new Date(cursor));
+    }
+    if (missingDates.length === 0) continue;
+    await prisma.checkIn.createMany({
+      data: missingDates.map((date) => ({ habitId: habit.id, date, status: "MISSED" as const })),
+      skipDuplicates: true,
+    });
+  }
+}
+
 export async function userHabitProgress(userId: string): Promise<HabitProgress> {
   const checkIns = await prisma.checkIn.findMany({
     where: { habit: { userId } },

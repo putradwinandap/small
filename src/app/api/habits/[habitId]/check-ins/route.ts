@@ -1,4 +1,5 @@
 import { CheckInStatus } from "@prisma/client";
+import { reconcileMissedCheckIns } from "@/application/habit-service";
 import { currentUserId } from "@/lib/auth";
 import { jsonError, readJson } from "@/lib/http";
 import { prisma } from "@/lib/prisma";
@@ -12,6 +13,7 @@ export async function POST(request: Request, context: { params: Promise<{ habitI
   const userId = await currentUserId();
   if (!userId) return jsonError("You must be logged in.", 401, "UNAUTHENTICATED");
   const { habitId } = await context.params;
+  await reconcileMissedCheckIns(userId);
   const body = await readJson(request);
   const status = body.status === "missed" ? CheckInStatus.MISSED : CheckInStatus.COMPLETE;
   const habit = await prisma.habit.findFirst({ where: { id: habitId, userId, status: "ACTIVE" } });

@@ -33,6 +33,7 @@ model Habit {
   userId                      String
   name                        String
   action                      String
+  schedule                    String      @default("daily")
   status                      HabitStatus @default(ACTIVE)
   inRecovery                  Boolean     @default(false)
   consecutiveMissedDays      Int         @default(0)

@@ -2,6 +2,7 @@ import { HabitStatus } from "@prisma/client";
 import {
   assertHabitCreationAllowed,
   listUserHabits,
+  reconcileMissedCheckIns,
   serializedHabit,
   userHabitProgress,
 } from "@/application/habit-service";
@@ -12,6 +13,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   const userId = await currentUserId();
   if (!userId) return jsonError("You must be logged in.", 401, "UNAUTHENTICATED");
+  await reconcileMissedCheckIns(userId);
   const [habits, progress] = await Promise.all([listUserHabits(userId), userHabitProgress(userId)]);
   return Response.json({ habits: habits.map(serializedHabit), progress });
 }
@@ -26,7 +28,7 @@ export async function POST(request: Request) {
     const name = requiredString(body.name, "name");
     const action = requiredString(body.action, "action");
     const habit = await prisma.habit.create({
-      data: { userId, name, action, status: HabitStatus.ACTIVE },
+      data: { userId, name, action, schedule: "daily", status: HabitStatus.ACTIVE },
     });
     return Response.json({ habit }, { status: 201 });
   } catch (error) {
