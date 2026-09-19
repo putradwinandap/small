@@ -36,4 +36,19 @@ test("a new user can create a habit and record a completion", async ({ page }) =
   await expect(page.getByLabel("Timezone")).toHaveValue("Asia/Jakarta");
   await page.reload();
   await expect(page.getByLabel("Timezone")).toHaveValue("Asia/Jakarta");
+
+  const habitsResponse = await page.request.get("/api/habits");
+  expect(habitsResponse.ok()).toBeTruthy();
+  const { habits } = await habitsResponse.json();
+  const habitId = habits[0].id as string;
+
+  const pauseResponse = await page.request.patch(`/api/habits/${habitId}`, {
+    data: { status: "PAUSED" },
+  });
+  expect(pauseResponse.ok()).toBeTruthy();
+
+  const replacementResponse = await page.request.post("/api/habits", {
+    data: { name: "Write", action: "Write one sentence" },
+  });
+  expect(replacementResponse.status()).toBe(409);
 });
